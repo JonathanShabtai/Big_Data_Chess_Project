@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html>
+<head>
+    <title>Chess Ratings Database</title>
+    <link type="text/css" rel="stylesheet" href="/elegant-aero.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<!-- Thanks to Mario C. E. Freese <mcefreese@gmail.com> for permission to use background image -->
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="chess.html">Chess Home</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="about.html">About<span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="submit-chess.html">Submit New Rating<span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+    </div>
+</nav>
+  <!-- Thanks to Mario C. E. Freese <mcefreese@gmail.com> for permission to use background image -->
+  <body style='background-image:URL("chess-board.jpg");background-repeat:no-repeat;background-position:center top;-webkit-background-size:100%;-moz-background-size:100%;-o-background-size:100%;background-size: 100%;'>
+
+
+  <div class="container mx-auto">
+      <div class="row justify-content-center bg-light p-5 m-5 rounded-lg">
+          <h2>Submit new data for a player</h2>
+      </div>
+
+    <form action="/chess-posted.html" style="background:#FFFFFF;width:60%;margin:auto"  method="get" class="elegant-aero">
+      <label> 
+          <span>id:</span> <input type="text" name="fide_id" value="0"/>
+          <span>first_name:</span> <input type="text" name="first_name" value="0"/>
+          <span>last_name:</span> <input type="text" name="last_name" value="0"/>
+          <span>rating_standard:</span> <input type="text" name="rating_standard" value="0"/>
+          <span>rating_blitz:</span> <input type="text" name="rating_blitz" value="0"/>
+          <span>rating_rapid:</span> <input type="text" name="rating_rapid" value="0"/>
+      </label>
+    <label>
+        <div class="row justify-content-center">
+	<input class="justify-content-center" type="submit" value="Submit">
+        </div>
+      </label>
+    </form>
+
+    <iframe frameBorder="0" name="results_iframe" style="width:100%"/>
+
+  </div>
+  </body>
+</html>

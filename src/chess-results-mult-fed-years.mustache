@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html>
+  <head>
+    <title>Result</title>
+    <link type="text/css" rel="stylesheet" href="table.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  </head>
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="chess.html">Chess Home</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+              <li class="nav-item active">
+                  <a class="nav-link" href="about.html">About<span class="sr-only">(current)</span></a>
+              </li>
+          </ul>
+          <ul class="navbar-nav">
+              <li class="nav-item active">
+                  <a class="nav-link" href="submit-chess.html">Submit New Rating<span class="sr-only">(current)</span></a>
+              </li>
+          </ul>
+      </div>
+  </nav>
+
+  <script>
+      // used google charts to produce my own charts of rating
+      google.charts.load('44', {
+          callback: drawBackgroundColor,
+          packages: ['corechart']
+      });
+      function drawBackgroundColor() {
+
+            /*
+          var chess_to_plot = [
+              [new Date('3/16/2016'), 3],
+              [new Date('3/17/2016'), 5],
+              [new Date('3/18/2016'), 7],
+              [new Date('3/19/2016'), 9],
+          ];
+            */
+
+          var chess_to_plot = [];
+
+          var data = new google.visualization.DataTable();
+          var data2 = new google.visualization.DataTable();
+          var data3 = new google.visualization.DataTable();
+
+          data.addColumn('date', 'Date');
+          data.addColumn('number', 'Blitz Rating');
+
+          data2.addColumn('date', 'Date');
+          data2.addColumn('number', 'Standard Rating');
+
+          data3.addColumn('date', 'Date');
+          data3.addColumn('number', 'Rapid Rating');
+
+          var options = {
+              hAxis: {
+                  title: 'Date'
+              },
+              vAxis: {
+                  title: 'Rating'
+              },
+              backgroundColor: '#f1f8e9'
+          };
+
+          var chart = new google.visualization.LineChart(document.getElementById('yo'));
+          var chart2 = new google.visualization.LineChart(document.getElementById('yo2'));
+          var chart3 = new google.visualization.LineChart(document.getElementById('yo3'));
+
+          data.addRows(chess_to_plot);
+          chart.draw(data, options);
+
+
+          // second chart
+          var chess_to_plot2 = [];
+          data2.addRows(chess_to_plot2);
+          chart2.draw(data2, options);
+
+          // third chart
+          var chess_to_plot3 = [];
+          data3.addRows(chess_to_plot3);
+          chart3.draw(data3, options);
+      }
+  </script>
+
+
+  <body>
+  <div class="container">
+      <div class="row justify-content-center">
+          <h1>Info about nation:{{id}}</h1>
+      </div>
+
+      <div class="row justify-content-center">
+          <h5>Standard rating over time:</h5>
+      </div>
+
+      <div id="yo2"></div>
+
+      <div class="row justify-content-center">
+          <h5>Rapid rating over time:</h5>
+      </div>
+
+      <div id="yo3"></div>
+
+      <div class="row justify-content-center">
+          <h5>Blitz rating over time:</h5>
+      </div>
+
+      <div id="yo"></div>
+
+
+      <div class="row justify-content-center">
+          <h4 class="alert alert-primary" role="alert">
+              Table of full info:
+          </h4>
+      </div>
+      <div class="row justify-content-center">
+          <table class="table table-striped" style="width:100%;margin:auto;">
+              <thead class="thead-dark">
+              <tr>
+                  <th scope="col">year</th>
+                  <th scope="col">federation</th>
+                  <th scope="col">avg rating_standard</th>
+                  <th scope="col">avg rating_rapid</th>
+                  <th scope="col">avg rating_blitz</th>
+              </tr>
+              </thead>
+              {{#airlineInfo}}
+                  <tr><td>{{year}}</td><td>{{federation}}</td><td>{{rating_standard}}</td><td>{{rating_blitz}}</td><td>{{rating_rapid}}</td></tr>
+              {{/airlineInfo}}
+          </table>
+      </div>
+  </div>
+  </div>
+</body>
+</html>

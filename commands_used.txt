@@ -1,0 +1,279 @@
+12/12/20, Jonathan Shabtai
+
+Please see my Final-Writeup.pdf for full explanation on my web app. This document has pieces of code I ran on the terminal in Hadoop, Hive, and HBase
+
+
+-=-=-=-=-=-=-=-=-=-=
+
+Copy files from local machine to hadoop:
+scp -i shabtai.pem ./final/shabtai_ratings_2016_2019.csv hadoop@ec2-52-15-169-10.us-east-2.compute.amazonaws.com:/home/hadoop/shabtai/final
+scp -i shabtai.pem ./final/players.csv hadoop@ec2-52-15-169-10.us-east-2.compute.amazonaws.com:/home/hadoop/shabtai/final
+scp -i shabtai.pem ./final/players_new.csv hadoop@ec2-52-15-169-10.us-east-2.compute.amazonaws.com:/home/hadoop/shabtai/final
+
+Get from Hadoop to Hive:
+beeline -u jdbc:hive2://localhost:10000/default -n hadoop -d org.apache.hive.jdbc.HiveDriver
+For HBASE:
+hbase shell
+
+Breaking down the ratings for 2016-2019
+
+In HIVE:
+2016 to 2019 ratings:
+CREATE TABLE shabtai_ratings_2016_2019
+  ( 
+     fide_id STRING, 
+     year BIGINT,
+     month BIGINT,
+     rating_standard BIGINT,
+     rating_rapid BIGINT,
+     rating_blitz BIGINT
+ ) 
+row format delimited fields terminated BY ',' lines terminated BY '\n' tblproperties("skip.header.line.count"="1");
+
+load data local inpath '/home/hadoop/shabtai/final/shabtai_ratings_2016_2019.csv' into table shabtai_ratings_2016_2019;
+
+
+players:
+CREATE TABLE shabtai_players
+  ( 
+     fide_id STRING, 
+     last_name STRING,
+     first_name STRING,
+     federation STRING,
+     gender STRING,
+     title STRING,
+     yob BIGINT
+ ) 
+row format delimited fields terminated BY ',' lines terminated BY '\n' tblproperties("skip.header.line.count"="1");
+
+load data local inpath '/home/hadoop/shabtai/final/players_new.csv' into table shabtai_players;
+
+In hbase:
+create 'shabtai_ratings_hbase', 'stats'
+
+In hive:
+create external table shabtai_ratings_hbase (
+     fide_id STRING, 
+     year BIGINT,
+     month BIGINT,
+     rating_standard BIGINT,
+     rating_rapid BIGINT,
+     rating_blitz BIGINT)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES
+('hbase.columns.mapping' = ':key,
+stats:year,
+stats:month,
+stats:rating_standard,
+stats:rating_rapid,
+stats:rating_blitz')
+TBLPROPERTIES ('hbase.table.name' = 'shabtai_ratings_hbase');
+
+insert overwrite table shabtai_ratings_hbase select fide_id, year, month, rating_standard, rating_rapid, rating_blitz from shabtai_ratings;
+
+
+
+Joining
+
+
+create table shabtai_players_and_ratings as(
+SELECT shabtai_players.fide_id,shabtai_players.last_name,
+shabtai_players.first_name,shabtai_players.federation,shabtai_players.gender,shabtai_players.title,shabtai_players.yob,
+shabtai_ratings_2016_2019.year,shabtai_ratings_2016_2019.month,
+shabtai_ratings_2016_2019.rating_standard,shabtai_ratings_2016_2019.rating_rapid,
+shabtai_ratings_2016_2019.rating_blitz
+FROM shabtai_players JOIN shabtai_ratings_2016_2019
+ON (shabtai_players.fide_id = shabtai_ratings_2016_2019.fide_id));
+
++------------------+------------+----------+
+|     col_name     | data_type  | comment  |
++------------------+------------+----------+
+| fide_id          | string     |          |
+| last_name        | string     |          |
+| first_name       | string     |          |
+| federation       | string     |          |
+| gender           | string     |          |
+| title            | string     |          |
+| yob              | bigint     |          |
+| year             | bigint     |          |
+| month            | bigint     |          |
+| rating_standard  | bigint     |          |
+| rating_rapid     | bigint     |          |
+| rating_blitz     | bigint     |          |
++------------------+------------+----------+
+
+In hbase:
+create 'shabtai_players_and_ratings_hbase', 'stats'
+
+In hive:
+create external table shabtai_players_and_ratings_hbase (
+     fide_id_month_year STRING, 
+     last_name STRING,
+     first_name STRING,
+     federation STRING,
+     gender STRING,
+     title STRING,
+     yob STRING,
+     year BIGINT,
+     month BIGINT,
+     rating_standard BIGINT,
+     rating_rapid BIGINT,
+     rating_blitz BIGINT)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES
+('hbase.columns.mapping' = ':key,
+stats:last_name,
+stats:first_name,
+stats:federation,
+stats:gender,
+stats:title,
+stats:yob,
+stats:year,
+stats:month,
+stats:rating_standard,
+stats:rating_rapid,
+stats:rating_blitz')
+TBLPROPERTIES ('hbase.table.name' = 'shabtai_players_and_ratings_hbase');
+
+insert overwrite table shabtai_players_and_ratings_hbase
+select concat(fide_id, '_', year, '_', month), last_name, first_name, federation, gender, title, yob,
+year, month, rating_standard, rating_rapid, rating_blitz from shabtai_players_and_ratings;
+
+// search for a player's name and find some id's for that name
+In hbase:
+create 'shabtai_id_name_hbase', 'stats'
+
+In hive:
+create external table shabtai_id_name_hbase (
+     first_name_last_name_fide_id STRING, 
+     first_name STRING,
+     last_name STRING,
+     fide_id STRING)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES
+('hbase.columns.mapping' = ':key,
+stats:first_name,
+stats:last_name,
+stats:fide_id')
+TBLPROPERTIES ('hbase.table.name' = 'shabtai_id_name_hbase');
+
+insert overwrite table shabtai_id_name_hbase
+select concat(first_name, '_', last_name, '_', fide_id), first_name, last_name, fide_id from shabtai_players;
+
+
+// year agg
+In hbase:
+create 'shabtai_players_and_ratings_by_year_hbase', 'stats'
+
+In hive:
+create external table shabtai_players_and_ratings_by_year_hbase (
+     fide_id_month_year STRING, 
+     last_name STRING,
+     first_name STRING,
+     federation STRING,
+     gender STRING,
+     title STRING,
+     yob STRING,
+     year BIGINT,
+     rating_standard BIGINT,
+     rating_rapid BIGINT,
+     rating_blitz BIGINT)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES
+('hbase.columns.mapping' = ':key,
+stats:last_name,
+stats:first_name,
+stats:federation,
+stats:gender,
+stats:title,
+stats:yob,
+stats:year,
+stats:rating_standard,
+stats:rating_rapid,
+stats:rating_blitz')
+TBLPROPERTIES ('hbase.table.name' = 'shabtai_players_and_ratings_by_year_hbase');
+
+insert overwrite table shabtai_players_and_ratings_by_year_hbase
+select concat(fide_id, '_', year), last_name, first_name, federation, gender, title, yob,
+year, AVG(rating_standard), AVG(rating_rapid), AVG(rating_blitz) from shabtai_players_and_ratings GROUP BY concat(fide_id, '_', year), last_name, first_name, federation, gender, title, yob, year;
+
+
+// fed agg
+In hbase:
+create 'shabtai_fed_and_ratings_by_year_hbase', 'stats'
+
+In hive:
+create external table shabtai_fed_and_ratings_by_year_hbase (
+     fed_year STRING, 
+     federation STRING,
+     year BIGINT,
+     rating_standard BIGINT,
+     rating_rapid BIGINT,
+     rating_blitz BIGINT)
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES
+('hbase.columns.mapping' = ':key,
+stats:federation,
+stats:year,
+stats:rating_standard,
+stats:rating_rapid,
+stats:rating_blitz')
+TBLPROPERTIES ('hbase.table.name' = 'shabtai_fed_and_ratings_by_year_hbase');
+
+insert overwrite table shabtai_fed_and_ratings_by_year_hbase
+select concat(federation, '_', year), federation, year, AVG(rating_standard), AVG(rating_rapid), AVG(rating_blitz) from shabtai_players_and_ratings GROUP BY concat(federation, '_', year), federation, year;
+
+//speed layer:
+
+
+
+// Number of games for each player
+In hbase:
+create 'shabtai_id_count', 'stats'
+
+In hive:
+create external table shabtai_id_count (
+     fide_id STRING, 
+     games_count BIGINT
+     )
+STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES
+('hbase.columns.mapping' = ':key,
+stats:games_count#b')
+TBLPROPERTIES ('hbase.table.name' = 'shabtai_id_count');
+
+insert overwrite table shabtai_id_count
+select fide_id, count(*) from shabtai_players_and_ratings GROUP BY fide_id;
+
+
+In hbase:
+create 'latest_chess_results', 'stats'
+
+// speed layer work
+in hadoop:
+cd kafka_2.12-2.2.1/bin/
+
+to create my topic:
+./kafka-topics.sh --create --zookeeper z-2.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:2181,z-3.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:2181,z-1.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:2181 --replication-factor 2 --partitions 1 --topic shabtai_final_test
+
+make sure the topic is ready to go:
+./kafka-topics.sh --list --zookeeper z-2.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:2181,z-3.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:2181,z-1.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:2181
+
+
+can write into the topic (like in hw8):
+./kafka-console-producer.sh --broker-list b-1.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:9092,b-2.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:9092 --topic shabtai_final_test
+
+and read what is in it:
+./kafka-console-consumer.sh --bootstrap-server b-1.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:9092,b-2.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:9092 --topic shabtai_final_test --from-beginning
+
+
+To debug in AWS Console:
+cd shabtai/final_project
+
+forever list | grep shabtai
+forever stop shabtai_final_project
+node app.js 3224 ip-172-31-11-144.us-east-2.compute.internal 8070 b-2.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:9092,b-1.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:9092
+
+
+To stream data, open speed_layer_chess2 in IntelliJ and run the following commands in an SSH session:
+get to this dir:
+/home/hadoop/shabtai/src/speed_layer_chess2/target
+
+to run on the cluster do:
+cd shabtai/src/speed_layer_chess2/target
+
+spark-submit --master local[2] --driver-java-options "-Dlog4j.configuration=file:///home/hadoop/ss.log4j.properties" --class StreamWeather uber-speed_layer_chess2-1.0-SNAPSHOT.jar b-1.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:9092,b-2.mpcs53014-kafka.fwx2ly.c4.kafka.us-east-2.amazonaws.com:9092

@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html>
+  <head>
+    <title>Chess Ratings Database</title>
+    <link type="text/css" rel="stylesheet" href="/elegant-aero.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  </head>
+  <!-- Thanks to Mario C. E. Freese <mcefreese@gmail.com> for permission to use background image -->
+  <body style='background-image:URL("chess-board.jpg");background-repeat:no-repeat;background-position:center top;-webkit-background-size:100%;-moz-background-size:100%;-o-background-size:100%;background-size: 100%;'>
+    <p style="margin-bottom:5px"/>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="chess.html">Chess Home</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="about.html">About<span class="sr-only">(current)</span></a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="submit-chess.html">Submit New Rating<span class="sr-only">(current)</span></a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container justify-content-center">
+
+      <div class="row justify-content-center bg-light p-5 m-5 rounded-lg w-100">
+        <h5>This website is about chess ratings. The ratings are based on the ELO rating assigned to each player by FIDE</h5>
+        <p>There are 427,952 players in the database, and data is available for each player and their ratings between 2016-2019</p>
+
+        <ul>
+          <li>You can find a player's FIDE ID by searching their first name.</li>
+          <li>For each player, you can find their rating for a specific month, or aggregated by year.</li>
+          <li>You can input updated rating using the submit-chess link on the nav bar</li>
+          <li>Those ratings will be displayed under the speed layer</li>
+          <li>Finally, you can see the information also aggregated by federations</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </body>
+</html>

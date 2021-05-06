@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html>
+<head>
+  <title>Chess Ratings Database</title>
+  <link type="text/css" rel="stylesheet" href="/elegant-aero.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<!-- Thanks to Mario C. E. Freese <mcefreese@gmail.com> for permission to use background image -->
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="chess.html">Chess Home</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="about.html">About<span class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="submit-chess.html">Submit New Rating<span class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<body style='background-image:URL("chess-board.jpg");background-repeat:no-repeat;-webkit-background-size:100%;-moz-background-size:100%;-o-background-size:100%;background-size: 100%;'>
+
+<div class="container mx-auto" style="width: auto;">
+
+  <div class="container mx-auto">
+
+    <div class="row justify-content-center bg-light p-5 m-5 rounded-lg">
+      <h3>Use the forms below to learn about chess ratings!</h3>
+    </div>
+
+    <div class="row text-white bg-dark p-2 m-2 rounded">
+      <form action="/chess-id-name.html" method="get">
+        <label>
+          <h6>Find id's by first name search</h6>
+          <span>First Name:</span> <input type="text" name="name" value="Hikaru"/>
+        </label>
+        <br>
+        <label>
+          <input type="submit" value="Submit">
+        </label>
+      </form>
+    </div>
+
+    <div class="row bg-light p-2 m-2 rounded">
+      <form action="/chess-results.html" method="get">
+        <label>
+          <h6>Search an ID, month and year in the format of ID_month_year to get information about a specific
+            players at a certain time stamp</h6>
+          <span>Please enter ID_month_year:</span> <input type="text" name="ID_month_year" value="1503014_2_2016"/>
+        </label>
+        <br>
+        <label>
+          <input type="submit" value="Submit">
+        </label>
+      </form>
+    </div>
+
+    <div class="row text-white bg-dark p-2 m-2 rounded">
+      <form action="/chess-results-mult-years-months.html" method="get">
+        <label>
+          <h6>Search an ID and get all info broken by year and month for that player</h6>
+          <span>Please enter a player's ID:</span> <input type="text" name="ID" value="12573981"/>
+        </label>
+        <br>
+        <label>
+          <input type="submit" value="Submit">
+        </label>
+      </form>
+    </div>
+
+    <div class="row bg-light p-2 m-2 rounded">
+      <form action="/chess-results-mult-years.html" method="get">
+        <label>
+          <h6>Search an ID and get all info aggregated by year</h6>
+          <span>Please enter a player's ID:</span> <input type="text" name="ID" value="5202213"/>
+        </label>
+        <br>
+        <label>
+          <input type="submit" value="Submit">
+        </label>
+      </form>
+    </div>
+
+    <div class="row text-white bg-dark p-2 m-2 rounded">
+      <form action="/chess-results-mult-fed-years.html" method="get">
+        <label>
+          <h6>Search a Fed and get all info aggregated by year</h6>
+          <span>Federation:</span> <input type="text" name="ID" value="USA"/>
+        </label>
+        <br>
+        <label>
+          <input type="submit" value="Submit">
+        </label>
+      </form>
+    </div>
+
+    <div class="row bg-light p-2 m-2 rounded">
+      <form action="/chess-results2.html" method="get">
+        <label>
+          <h6>Speed Layer for an ID</h6>
+          <span>Please enter ID:</span> <input type="text" name="ID" value="1503014"/>
+        </label>
+        <br>
+        <label>
+          <input type="submit" value="Submit">
+        </label>
+      </form>
+    </div>
+
+
+    <div class="row text-white bg-dark p-2 m-2 rounded">
+      <form action="/chess-latest.html" method="get">
+        <label>
+          <h6>Speed Layer - Search an ID and get their live data</h6>
+          <span>Please enter a player's ID:</span> <input type="text" name="ID" value="1503014"/>
+        </label>
+        <br>
+        <label>
+          <input type="submit" value="Submit">
+        </label>
+      </form>
+    </div>
+
+    <iframe frameBorder="0" name="results_iframe" style="width:100%"/>
+  </div>
+</div>
+</body>
+</html>
